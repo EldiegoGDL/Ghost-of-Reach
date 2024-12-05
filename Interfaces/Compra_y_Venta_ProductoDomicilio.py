@@ -26,23 +26,59 @@ def buscar_elemento():
         messagebox.showwarning("Selección vacía", "Por favor, selecciona un videojuego para buscar.")
 
 def abrir_nueva_ventana(videojuego):
-    """Abre una nueva ventana con la información del videojuego seleccionado."""
+    """Abre una nueva ventana con la información detallada del videojuego seleccionado."""
     nueva_ventana = tk.Toplevel(ventana)
-    nueva_ventana.geometry("300x200")
+    nueva_ventana.geometry("350x400")
     nueva_ventana.title(f"Detalles de {videojuego}")
-    nueva_ventana.config(bg="#c8c8c8")
+    nueva_ventana.config(bg="#f9f9f9")
 
-    # Obtener plataforma del videojuego
     plataforma = plataformas[videojuego]
+    precio_unitario = 1200  # Precio fijo por videojuego (puedes cambiarlo según tu lógica)
+    cantidad = tk.IntVar(value=1)  # Variable para la cantidad seleccionada
+    costo_envio = tk.DoubleVar(value=30.0)  # Variable para el costo de envío
 
-    etiqueta = ttk.Label(nueva_ventana, text=f"Plataforma: {plataforma}", font=("Times New Roman", 12),background="#c8c8c8")
-    etiqueta.pack(pady=20)
+    def calcular_total():
+        """Calcula el total basado en la cantidad y el costo de envío."""
+        try:
+            envio = costo_envio.get()
+            total = (precio_unitario * cantidad.get()) + envio
+            total_label.config(text=f"$ {total:.2f}")
+        except tk.TclError:
+            total_label.config(text="Error en los valores")
 
-    comprar_btn = ttk.Button(nueva_ventana, text="Comprar", command=lambda: confirmar_compra(videojuego))
-    comprar_btn.pack(pady=10)
+    # Título del videojuego
+    ttk.Label(nueva_ventana, text=f"{videojuego}", font=("Times New Roman", 14, "bold"), background="#f9f9f9").pack(pady=10)
 
-    cerrar_btn = ttk.Button(nueva_ventana, text="Cerrar", command=nueva_ventana.destroy)
-    cerrar_btn.pack(pady=10)
+    # Plataforma
+    ttk.Label(nueva_ventana, text=f"Plataforma: {plataforma}", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
+
+    # Cantidad
+    ttk.Label(nueva_ventana, text="Cantidad:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
+    cantidad_entry = ttk.Entry(nueva_ventana, textvariable=cantidad, width=5, justify="center")
+    cantidad_entry.pack(pady=5)
+    cantidad.trace("w", lambda *args: calcular_total())  # Actualizar total al cambiar la cantidad
+
+    # Costo de envío
+    ttk.Label(nueva_ventana, text="Costo de envío:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
+    envio_entry = ttk.Entry(nueva_ventana, textvariable=costo_envio, width=10, justify="center")
+    envio_entry.pack(pady=5)
+    costo_envio.trace("w", lambda *args: calcular_total())  # Actualizar total al cambiar el costo de envío
+
+    # Total
+    ttk.Label(nueva_ventana, text="Total:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
+    total_label = ttk.Label(nueva_ventana, text=f"$ {precio_unitario + costo_envio.get():.2f}", font=("Times New Roman", 12), background="#f9f9f9")
+    total_label.pack(pady=5)
+
+    # Botones de Confirmar y Cancelar
+    botones_frame = ttk.Frame(nueva_ventana)
+    botones_frame.pack(pady=20)
+
+    cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=nueva_ventana.destroy)
+    cancelar_btn.grid(row=0, column=0, padx=10)
+
+    confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(nueva_ventana, videojuego))
+    confirmar_btn.grid(row=0, column=1, padx=10)
+
 
 def confirmar_compra(videojuego):
     """Abre una ventana para confirmar la compra del videojuego."""
