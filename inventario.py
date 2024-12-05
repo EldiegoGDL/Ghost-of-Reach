@@ -16,32 +16,39 @@ def editar_producto():
 def eliminar_producto():
     messagebox.showinfo("Eliminar Producto", "Ir a la página de eliminar producto")
 
-def main():
-    root = tk.Tk()
-    root.title("Gestión de Inventario")
-    root.geometry("400x500")
-    root.configure(bg="#FFD700")
+class Inventario:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Gestión de Inventario")
+        self.root.geometry("400x500")
+        self.root.configure(bg="#FFD700")
 
-    title_label = tk.Label(root, text="Gestión de Inventario", font=("Helvetica", 24, "bold"), fg="darkmagenta", bg="#FFD700")
-    title_label.pack(pady=10)
+        # Título de la ventana
+        title_label = tk.Label(root, text="Gestión de Inventario", font=("Helvetica", 24, "bold"), fg="darkmagenta", bg="#FFD700")
+        title_label.pack(pady=10)
 
-    subtitle_label = tk.Label(root, text="Agrega, busca y administra productos", font=("Helvetica", 14), fg="darkmagenta", bg="#FFD700")
-    subtitle_label.pack(pady=10)
+        # Subtítulo
+        subtitle_label = tk.Label(root, text="Agrega, busca y administra productos", font=("Helvetica", 14), fg="darkmagenta", bg="#FFD700")
+        subtitle_label.pack(pady=10)
 
-    buttons = [
-        ("Buscar Productos", buscar_productos),
-        ("Agregar Producto", agregar_producto),
-        ("Ver Detalles", ver_detalles),
-        ("Editar Producto", editar_producto),
-        ("Eliminar Producto", eliminar_producto),
-    ]
+        # Lista de botones y sus funciones
+        buttons = [
+            ("Buscar Productos", buscar_productos),
+            ("Agregar Producto", agregar_producto),
+            ("Ver Detalles", ver_detalles),
+            ("Editar Producto", editar_producto),
+            ("Eliminar Producto", eliminar_producto),
+        ]
 
-    for btn_text, btn_command in buttons:
-        button = tk.Button(root, text=btn_text, command=btn_command, bg="#F08080", fg="white", font=("Helvetica", 12), width=20, height=2)
-        button.pack(pady=10)
+        # Crear los botones y añadirlos a la ventana
+        for btn_text, btn_command in buttons:
+            button = tk.Button(root, text=btn_text, command=btn_command, bg="#F08080", fg="white", font=("Helvetica", 12), width=20, height=2)
+            button.pack(pady=10)
 
-    root.mainloop()
+    # Si se desea, se pueden agregar más métodos específicos aquí
 
+# Código principal que inicia la ventana
 if __name__ == "__main__":
-    main()
-
+    root = tk.Tk()  # Crear la ventana principal
+    inventario_window = Inventario(root)  # Crear la instancia de la clase Inventario
+    root.mainloop()  # Iniciar el ciclo de la aplicación
