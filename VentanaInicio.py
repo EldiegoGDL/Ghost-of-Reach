@@ -10,20 +10,21 @@ from tkinter import PhotoImage
 MainV= tk.Tk()
 MainV.geometry ("300x500")
 MainV.resizable(0,0)
+MainV.configure(bg="cornflowerblue")
 MainV.title("Ventana Principal")
 
 #Texto Ventana
 bienvenida=ttk.Label(text="Bienvenidos", font=("Arial Black",15) )
-#inventario=ttk.Label(text="Inventario",font=("Arial Black",15))
-#compraFisica=ttk.Label(text="Compra Fisica",font=("Arial Black",15))
-#compraDomicilio=ttk.Label(text="Compra Domicilio",font=("Arial Black",15))
-
 
 #ubicacion de los textos
 bienvenida.place(x=75,y=10)
-#inventario.place(x=75,y=125)
-#compraFisica.place(x=75,y= 250)
-#compraDomicilio.place(x=60,y=350)
+
+# Estilo para botones
+style = ttk.Style()
+style.configure("TButton",
+                background="#0000FF",  # Color azul para los botones
+                foreground="blue",     # Texto azul en los botones
+                font=("Arial", 10))
 
 #Botones 
 inventario= ttk.Button(text="Inventario")
