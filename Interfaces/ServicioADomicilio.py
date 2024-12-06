@@ -17,21 +17,6 @@ def mostrar_agregar_direccion(telefono):
     nueva_ventana.geometry("600x600")
     nueva_ventana.config(bg="gray")
 
-    """
-    cliente_db = Cliente('Prueva.db')
-
-    # Ejecutar una consulta para buscar el teléfono en la base de datos
-    resultado = cliente_db.consultar('''
-        SELECT telefono FROM cliente WHERE telefono = ?
-    ''', ("telefono",))
-
-    # Si el resultado no está vacío, significa que el teléfono ya existe
-    if resultado:
-        return True  # El teléfono ya existe
-    else:
-        return False  # El teléfono no existe
-    """
-
     # Conectar con la base de datos y obtener el nombre del cliente
     cliente_db = Cliente("prueva.db")  # Asegúrate de usar la ruta correcta para tu base de datos
 
@@ -108,7 +93,7 @@ def mostrar_agregar_direccion(telefono):
 
     # Botones
     tk.Button(miFrame, text="Confirmar", bg="green", fg="white", command=validar_campos).place(x=300, y=450)
-    tk.Button(miFrame, text="Atrás", bg="red", fg="white", command=ventana.destroy).place(x=100, y=450)
+    tk.Button(miFrame, text="Atrás", bg="red", fg="white", command=nueva_ventana.destroy).place(x=100, y=450)
 
 # Pantalla de buscar videojuegos
 def mostrar_buscar_videojuegos(nombreText, calleText):
@@ -183,7 +168,7 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         botones_frame = ttk.Frame(nueva_ventana)
         botones_frame.pack(pady=20)
 
-        cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=nueva_ventana.destroy)
+        cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=ventana.destroy)
         cancelar_btn.grid(row=0, column=0, padx=10)
 
         confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(videojuego, metodo_pago.get(), envio_entry.get(), precio_unitario))
