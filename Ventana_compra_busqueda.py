@@ -139,5 +139,5 @@ def mostrar_ventana():
     # Cargar productos al iniciar
     actualizar_lista_desde_bd(listbox)
 
-    ventana.mainloop()
-
+# Ejecutar ventana
+ventana.mainloop()
