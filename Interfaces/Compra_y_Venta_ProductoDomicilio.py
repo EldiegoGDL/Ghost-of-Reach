@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import sqlite3 as sql
 
 def buscar_en_lista(event=None):
     """Filtra los videojuegos según el texto ingresado en el Entry."""
@@ -19,29 +20,30 @@ def buscar_elemento():
     try:
         seleccionado = listbox.get(listbox.curselection())  # Obtener el videojuego seleccionado
         if seleccionado in videojuegos_disponibles:
-            abrir_nueva_ventana(seleccionado)
+            abrir_ventana_compra(seleccionado)
         else:
             messagebox.showinfo("No disponible", f"El videojuego '{seleccionado}' no está disponible.")
     except tk.TclError:
         messagebox.showwarning("Selección vacía", "Por favor, selecciona un videojuego para buscar.")
 
-def abrir_nueva_ventana(videojuego):
+def abrir_ventana_compra(videojuego):
     """Abre una nueva ventana con la información detallada del videojuego seleccionado."""
     nueva_ventana = tk.Toplevel(ventana)
-    nueva_ventana.geometry("350x400")
+    nueva_ventana.geometry("350x450")
     nueva_ventana.title(f"Detalles de {videojuego}")
     nueva_ventana.config(bg="#f9f9f9")
 
     plataforma = plataformas[videojuego]
     precio_unitario = 1200  # Precio fijo por videojuego (puedes cambiarlo según tu lógica)
-    cantidad = tk.IntVar(value=1)  # Variable para la cantidad seleccionada
+    cantidad = 1  # Cantidad fija no editable
     costo_envio = tk.DoubleVar(value=30.0)  # Variable para el costo de envío
+    metodo_pago = tk.StringVar(value="seleccione un metodo de pago")  # Método de pago seleccionado (default)
 
     def calcular_total():
         """Calcula el total basado en la cantidad y el costo de envío."""
         try:
             envio = costo_envio.get()
-            total = (precio_unitario * cantidad.get()) + envio
+            total = (precio_unitario * cantidad) + envio
             total_label.config(text=f"$ {total:.2f}")
         except tk.TclError:
             total_label.config(text="Error en los valores")
@@ -54,9 +56,8 @@ def abrir_nueva_ventana(videojuego):
 
     # Cantidad
     ttk.Label(nueva_ventana, text="Cantidad:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
-    cantidad_entry = ttk.Entry(nueva_ventana, textvariable=cantidad, width=5, justify="center")
-    cantidad_entry.pack(pady=5)
-    cantidad.trace("w", lambda *args: calcular_total())  # Actualizar total al cambiar la cantidad
+    cantidad_label = ttk.Label(nueva_ventana, text=int(cantidad), anchor="center", font=("Times New Roman", 12),background="#f9f9f9", width=10)
+    cantidad_label.pack(pady=5)
 
     # Costo de envío
     ttk.Label(nueva_ventana, text="Costo de envío:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
@@ -69,6 +70,11 @@ def abrir_nueva_ventana(videojuego):
     total_label = ttk.Label(nueva_ventana, text=f"$ {precio_unitario + costo_envio.get():.2f}", font=("Times New Roman", 12), background="#f9f9f9")
     total_label.pack(pady=5)
 
+    # Tipo de transacción
+    ttk.Label(nueva_ventana, text="Tipo de transacción:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
+    combobox_metodo_pago = ttk.Combobox(nueva_ventana, textvariable=metodo_pago, state="readonly", values=["Tarjeta", "Efectivo"])
+    combobox_metodo_pago.pack(pady=5)
+
     # Botones de Confirmar y Cancelar
     botones_frame = ttk.Frame(nueva_ventana)
     botones_frame.pack(pady=20)
@@ -76,8 +82,9 @@ def abrir_nueva_ventana(videojuego):
     cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=nueva_ventana.destroy)
     cancelar_btn.grid(row=0, column=0, padx=10)
 
-    confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(nueva_ventana, videojuego))
+    confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(nueva_ventana, videojuego, metodo_pago.get()))
     confirmar_btn.grid(row=0, column=1, padx=10)
+
 
 
 def confirmar_compra(videojuego):
@@ -96,10 +103,10 @@ def confirmar_compra(videojuego):
     cancelar_btn = ttk.Button(ventana_compra, text="Cancelar", command=ventana_compra.destroy)
     cancelar_btn.pack(pady=5)
 
-def compra_exitosa(ventana_compra, videojuego):
+def compra_exitosa(ventana_compra, videojuego, metodo_de_pago):
     """Muestra un mensaje de compra exitosa y cierra la ventana de confirmación."""
     ventana_compra.destroy()
-    messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.")
+    messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito. \ntipo de pago: {metodo_de_pago}")
 
 # Crear ventana principal
 ventana = tk.Tk()
