@@ -9,13 +9,34 @@ sys.path.append(ruta_base_datos)
 # Importar las clases necesarias desde el archivo externo
 from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
 
-
-def mostrar_agregar_direccion():
+def mostrar_agregar_direccion(telefono):
     
-    nueva_ventana = tk.Tk()  # Crear una nueva ventana
+    nueva_ventana = tk.Toplevel()   # Crear una nueva ventana
     nueva_ventana.title("Agregar Dirección")
     nueva_ventana.geometry("600x600")
     nueva_ventana.config(bg="gray")
+
+    # Conectar con la base de datos y obtener el nombre del cliente
+    cliente_db = Cliente("prueva.db")  # Asegúrate de usar la ruta correcta para tu base de datos
+
+    resultado_nom = cliente_db.consultar('''
+        SELECT nombre_cliente FROM cliente WHERE telefono = ?
+    ''', (telefono,))
+
+    resultado_num = cliente_db.consultar('''
+        SELECT telefono FROM cliente WHERE telefono = ?
+    ''', (telefono,))
+
+    if resultado_nom:
+        nombre_cliente = resultado_nom[0][0]  # Obtener el primer resultado de la consulta
+    else:
+        nombre_cliente = "Cliente no encontrado" 
+
+    if resultado_num:
+        numero_cliente = resultado_num[0][0]  # Obtener el primer resultado de la consulta
+    else:
+        numero_cliente = "Cliente no encontrado" 
+
 
     miFrame = tk.Frame(nueva_ventana, width=500, height=500, bg="#c8c8c8")
     miFrame.pack()
@@ -35,11 +56,11 @@ def mostrar_agregar_direccion():
 
     # Creación de las etiquetas y campos con validaciones
     tk.Label(miFrame, text="Nombre").place(x=50, y=50)
-    nombreText = tk.Entry(miFrame, validate="key", validatecommand=(nueva_ventana.register(validar_entrada_letras), "%P"))
+    nombreText = tk.Entry(miFrame, validate="key", textvariable=tk.StringVar(value=nombre_cliente), validatecommand=(nueva_ventana.register(validar_entrada_letras), "%P"))
     nombreText.place(x=110, y=50)
 
     tk.Label(miFrame, text="Número de Teléfono").place(x=250, y=50)
-    numeroText = tk.Entry(miFrame, validate="key", validatecommand=(nueva_ventana.register(validar_entrada_numeros), "%P"))
+    numeroText = tk.Entry(miFrame, validate="key", textvariable=tk.StringVar(value=numero_cliente), validatecommand=(nueva_ventana.register(validar_entrada_letras), "%P"))
     numeroText.place(x=380, y=50)
 
     tk.Label(miFrame, text="Calle").place(x=50, y=100)
@@ -71,72 +92,89 @@ def mostrar_agregar_direccion():
 
     # Botones
     tk.Button(miFrame, text="Confirmar", bg="green", fg="white", command=validar_campos).place(x=300, y=450)
-    tk.Button(miFrame, text="Atrás", bg="red", fg="white", command=ventana.destroy).place(x=100, y=450)
+    tk.Button(miFrame, text="Atrás", bg="red", fg="white", command=nueva_ventana.destroy).place(x=100, y=450)
 
 # Pantalla de buscar videojuegos
 def mostrar_buscar_videojuegos(nombreText, calleText):
     
-    ventana = tk.Tk()  # Crear una nueva ventana
+    ventana = tk.Toplevel()  
     ventana.title("Buscar Videojuegos")
     ventana.geometry('600x400')
     ventana.config(bg="#c8c8c8")
 
+    DB_NAME = "Prueva.db"
+    producto_db = Producto(DB_NAME)
+
+    # Función para actualizar la lista desde la base de datos
+    def actualizar_lista_desde_bd():
+        productos = producto_db.consultar("SELECT nombre_producto FROM producto WHERE cantidad > 0")
+        lista_productos = [producto[0] for producto in productos]  # Extraer nombres de productos
+        actualizar_lista(lista_productos)
+
+    def actualizar_lista(productos):
+        """Actualiza los elementos del Listbox con una nueva lista de productos."""
+        listbox.delete(0, tk.END)  # Limpia el Listbox
+        for producto in productos:
+            listbox.insert(tk.END, producto)  # Agrega cada producto al Listbox
+
     def buscar_en_lista(event=None):
+        """Filtra los productos según el texto ingresado."""
         termino = entrada.get().lower()
-        lista_filtrada = [item for item in videojuegos if termino in item.lower()]
+        productos = producto_db.consultar("SELECT nombre_producto FROM producto WHERE cantidad > 0")
+        lista_filtrada = [producto[0] for producto in productos if termino in producto[0].lower()]
         actualizar_lista(lista_filtrada)
 
-    def actualizar_lista(lista_filtrada):
-        listbox.delete(0, tk.END)
-        for item in lista_filtrada:
-            listbox.insert(tk.END, item)
 
     def buscar_elemento():
+        """Muestra detalles del producto seleccionado."""
         try:
             seleccionado = listbox.get(listbox.curselection())
-            if seleccionado in videojuegos_disponibles:
-                abrir_ventana_compra(seleccionado)
+            detalles = producto_db.consultar("SELECT * FROM producto WHERE nombre_producto = ?", (seleccionado,))
+            if detalles:
+                abrir_ventana_compra(detalles[0])
             else:
-                messagebox.showinfo("No disponible", f"El videojuego '{seleccionado}' no está disponible.")
+                messagebox.showinfo("No disponible", f"El producto '{seleccionado}' no está disponible.")
         except tk.TclError:
-            messagebox.showwarning("Selección vacía", "Por favor, selecciona un videojuego para buscar.")
+            messagebox.showwarning("Selección vacía", "Por favor, selecciona un producto para buscar.")
 
-    def abrir_ventana_compra(videojuego):
+    def abrir_ventana_compra(detalles_producto):
         """Abre una nueva ventana con la información detallada del videojuego seleccionado."""
         nueva_ventana = tk.Toplevel(ventana)
         nueva_ventana.geometry("350x450")
-        nueva_ventana.title(f"Detalles de {videojuego}")
+        nueva_ventana.title(f"Detalles de {detalles_producto[1]}")
         nueva_ventana.config(bg="#f9f9f9")
 
-        plataforma = plataformas[videojuego]
-        precio_unitario = 1200  # Precio fijo por videojuego (puedes cambiarlo según tu lógica)
-        cantidad = 1  # Cantidad fija no editable
-        costo_envio = tk.DoubleVar(value=30.0)  # Variable para el costo de envío
-        metodo_pago = tk.StringVar(value="seleccione un metodo de pago")  # Método de pago seleccionado (default)
+        info = f"Producto: {detalles_producto[1]}\n"
+        info += f"Precio: {detalles_producto[2]}\n"
+        info += f"Género: {detalles_producto[3]}\n"
+        info += f"Calificación: {detalles_producto[4]}\n"
+        info += f"Plataforma: {detalles_producto[5]}\n"
+        info += f"Cantidad disponible: {detalles_producto[6]}"
 
         # Título del videojuego
-        ttk.Label(nueva_ventana, text=f"{videojuego}", font=("Times New Roman", 14, "bold"), background="#f9f9f9").pack(pady=10)
+        ttk.Label(nueva_ventana, text=f"{detalles_producto[1]}", font=("Times New Roman", 14, "bold"), background="#f9f9f9").pack(pady=10)
 
         # Plataforma
-        ttk.Label(nueva_ventana, text=f"Plataforma: {plataforma}", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
+        ttk.Label(nueva_ventana, text=f"Plataforma: {detalles_producto[5]}", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
 
         # Cantidad
         ttk.Label(nueva_ventana, text="Cantidad:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
-        cantidad_label = ttk.Label(nueva_ventana, text=int(cantidad), anchor="center", font=("Times New Roman", 12),background="#f9f9f9", width=10)
+        cantidad_label = ttk.Label(nueva_ventana, text=1, anchor="center", font=("Times New Roman", 12),background="#f9f9f9", width=10)
         cantidad_label.pack(pady=5)
 
         # Costo de envío
         ttk.Label(nueva_ventana, text="Costo de envío:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
-        envio_entry = ttk.Entry(nueva_ventana, textvariable=costo_envio, width=10, justify="center")
+        envio_entry = ttk.Entry(nueva_ventana,  width=10, justify="center")
         envio_entry.pack(pady=5)
 
         # Total
         ttk.Label(nueva_ventana, text="costo del juego:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
-        total_label = ttk.Label(nueva_ventana, text=f"$ {precio_unitario + costo_envio.get():.2f}", font=("Times New Roman", 12), background="#f9f9f9")
+        total_label = ttk.Label(nueva_ventana, text=f"$ {detalles_producto[2]}", font=("Times New Roman", 12), background="#f9f9f9")
         total_label.pack(pady=5)
         
 
         # Tipo de transacción
+        ttk.Label(nueva_ventana, text="tipo de pago:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
         metodo_pago = tk.StringVar()  # Elimina el valor predeterminado inicial
         combobox_metodo_pago = ttk.Combobox(nueva_ventana, textvariable=metodo_pago, state="readonly", values=["Tarjeta", "Efectivo"])
         combobox_metodo_pago.pack(pady=5)
@@ -146,10 +184,10 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         botones_frame = ttk.Frame(nueva_ventana)
         botones_frame.pack(pady=20)
 
-        cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=nueva_ventana.destroy)
+        cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=ventana.destroy)
         cancelar_btn.grid(row=0, column=0, padx=10)
 
-        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(videojuego, metodo_pago.get(), costo_envio.get(), precio_unitario))
+        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(detalles_producto[1], metodo_pago.get(), envio_entry.get(), detalles_producto[2]))
         confirmar_btn.grid(row=0, column=1, padx=10)
 
     def compra_exitosa(videojuego, metodo_pago, costo_envio, precio_unitario ):
@@ -193,35 +231,7 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
     tk.Button(ventana, text="Atrás", command=ventana.destroy).pack(pady=10)
     tk.Button(ventana, text="Buscar", command=buscar_elemento).pack()
 
-    videojuegos = [
-        "The Legend of Zelda: Breath of the Wild", "Super Mario Odyssey", "Halo Infinite", "God of War Ragnarok",
-        "Elden Ring", "Hollow Knight", "Minecraft", "Fortnite", "Cyberpunk 2077", "Red Dead Redemption 2",
-        "The Witcher 3", "Among Us", "League of Legends", "Call of Duty: Modern Warfare II", "Final Fantasy XVI"
-    ]
-
-    videojuegos_disponibles = [
-        "The Legend of Zelda: Breath of the Wild", "God of War Ragnarok", "Elden Ring", "Minecraft", "Red Dead Redemption 2"
-    ]
-
-    plataformas = {
-        "The Legend of Zelda: Breath of the Wild": "Nintendo Switch",
-        "Super Mario Odyssey": "Nintendo Switch",
-        "Halo Infinite": "Xbox Series X|S",
-        "God of War Ragnarok": "PlayStation 5",
-        "Elden Ring": "Multiplataforma",
-        "Hollow Knight": "Multiplataforma",
-        "Minecraft": "Multiplataforma",
-        "Fortnite": "Multiplataforma",
-        "Cyberpunk 2077": "Multiplataforma",
-        "Red Dead Redemption 2": "Multiplataforma",
-        "The Witcher 3": "Multiplataforma",
-        "Among Us": "Multiplataforma",
-        "League of Legends": "PC",
-        "Call of Duty: Modern Warfare II": "Multiplataforma",
-        "Final Fantasy XVI": "PlayStation 5"
-    }
-
-    actualizar_lista(videojuegos)
+    actualizar_lista_desde_bd()
 
 
 def verificar_telefono_existe(telefono):
@@ -278,7 +288,8 @@ def mostrar_agregar_cliente():
 
 # Función para mostrar la ventana principal
 def mostrar_ventana_principal():
-    ventana = tk.Tk()
+    
+    ventana = tk.Tk()  # Ventana principal
     ventana.title("Verificar Cliente")
     ventana.geometry("400x200")
     ventana.config(bg="gray")
@@ -298,16 +309,14 @@ def mostrar_ventana_principal():
             if verificar_telefono_existe(telefono):
                 messagebox.showinfo("Cliente encontrado", "Cliente encontrado en la base de datos.")
                 
-                mostrar_agregar_direccion()
+                mostrar_agregar_direccion(telefono)
             else:
                 messagebox.showinfo("error", "cliente no encontrado")
 
     tk.Button(miFrame, text="Continuar", bg="green", fg="white", command=continuar).pack(pady=10)
     tk.Button(miFrame, text="Agregar Cliente", bg="blue", fg="white", command=mostrar_agregar_cliente).pack(pady=10)
+    ventana.mainloop()
 
 
 
-# Inicio de la aplicación
-ventana = tk.Tk()
 mostrar_ventana_principal()
-ventana.mainloop()

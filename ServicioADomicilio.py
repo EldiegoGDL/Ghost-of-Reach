@@ -278,6 +278,7 @@ def mostrar_agregar_cliente():
 
 # Función para mostrar la ventana principal
 def mostrar_ventana_principal():
+    ventana.destroy()
     ventana = tk.Tk()
     ventana.title("Verificar Cliente")
     ventana.geometry("400x200")
