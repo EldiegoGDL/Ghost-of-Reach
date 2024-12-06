@@ -23,7 +23,7 @@ def Inventario():
 # Ventana principal
 ventana = tk.Tk()
 ventana.geometry("400x300")  # Tamaño de la ventana
-ventana.title("")
+ventana.title("Ventana principal")
 ventana.config(bg="black")  # Fondo negro
 
 # Botón 1: Compra física
