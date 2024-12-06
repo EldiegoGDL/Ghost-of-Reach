@@ -125,11 +125,11 @@ class Cliente(BaseDatos):
     def __init__(self, db_name):
         super().__init__(db_name)
 
-    def crear_cliente(self, nombre_cliente, apellido_cliente, telefono, correo_cliente):
+    def crear_cliente(self, nombre_cliente, apellido_cliente, telefono):
         self.ejecutar('''
-            INSERT INTO cliente (nombre_cliente, apellido_cliente, telefono, correo_cliente)
+            INSERT INTO cliente (nombre_cliente, apellido_cliente, telefono)
             VALUES (?, ?, ?, ?)
-        ''', (nombre_cliente, apellido_cliente, telefono, correo_cliente))
+        ''', (nombre_cliente, apellido_cliente, telefono))
 
 
 #transaccion
