@@ -157,11 +157,6 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         # Plataforma
         ttk.Label(nueva_ventana, text=f"Plataforma: {detalles_producto[5]}", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
 
-        # Cantidad
-        ttk.Label(nueva_ventana, text="Cantidad:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
-        cantidad_label = ttk.Label(nueva_ventana, text=1, anchor="center", font=("Times New Roman", 12),background="#f9f9f9", width=10)
-        cantidad_label.pack(pady=5)
-
         # Costo de envío
         ttk.Label(nueva_ventana, text="Costo de envío:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
         envio_entry = ttk.Entry(nueva_ventana,  width=10, justify="center")
@@ -187,10 +182,10 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=ventana.destroy)
         cancelar_btn.grid(row=0, column=0, padx=10)
 
-        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(detalles_producto[1], metodo_pago.get(), envio_entry.get(), detalles_producto[2]))
+        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(detalles_producto[1], metodo_pago.get(), envio_entry.get(), detalles_producto[2], detalles_producto[0]))
         confirmar_btn.grid(row=0, column=1, padx=10)
 
-    def compra_exitosa(videojuego, metodo_pago, costo_envio, precio_unitario ):
+    def compra_exitosa(videojuego, metodo_pago, costo_envio, precio_unitario, id_productos ):
         if metodo_pago == "seleccione un metodo de pago" or not metodo_pago:
             messagebox.showwarning("Método de pago", "Por favor, selecciona un método de pago.")
             return
@@ -203,7 +198,7 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         transaccion.crear_transaccion(
             id_empleado=1,  # Sustituye con el ID real
             id_cliente=1,
-            id_producto=1,
+            id_producto=id_productos,
             monto = precio_unitario,
             direccion=direccion,
             fecha_inicio=fecha_inicio,
@@ -212,6 +207,13 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
             fecha_compra=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             tipo_transaccion=metodo_pago
         )
+        producto_db.ejecutar('''
+        UPDATE producto
+        SET cantidad = cantidad - ?
+        WHERE id_producto = ?
+        ''', (1, id_productos))
+
+        actualizar_lista_desde_bd()
 
         messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.\nMétodo de pago: {metodo_pago}\n"
                                             f"Nombre: {nombreText}\nCalle: {calleText}")
