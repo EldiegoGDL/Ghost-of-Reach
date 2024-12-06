@@ -141,9 +141,3 @@ def mostrar_ventana():
 
     ventana.mainloop()
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> cf0d2947ba95f413d8a49c00400c0a2eb95d7a8b
