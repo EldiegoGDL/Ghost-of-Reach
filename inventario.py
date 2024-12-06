@@ -74,6 +74,7 @@ def buscar_productos():
     buscar_window.title("Buscar Productos")
     buscar_window.geometry("400x300")
     buscar_window.configure(bg="#202020")
+    buscar_window.resizable(0,0)
 
     tk.Label(buscar_window, text="Nombre del Producto", bg="#202020", fg="#FFFFFF").pack(pady=5)
     entry_nombre = tk.Entry(buscar_window, bg="#303030", fg="#00FF00")
@@ -99,8 +100,9 @@ def agregar_producto():
         
     agregar_window = tk.Toplevel(root)
     agregar_window.title("Agregar Producto")
-    agregar_window.geometry("300x350")
+    agregar_window.geometry("300x450")
     agregar_window.configure(bg="#202020")
+    agregar_window.resizable(0,0)
     
     tk.Label(agregar_window, text="Nombre", bg="#202020", fg="#FFFFFF").pack(pady=5)
     entry_nombre = tk.Entry(agregar_window, bg="#303030", fg="#00FF00")
@@ -135,7 +137,14 @@ def ver_detalles():
         producto = producto_db.obtener_producto_por_id(producto_id)
         if producto:
             resultado_text.delete(1.0, tk.END)
-            resultado_text.insert(tk.END, f"ID: {producto[0]}\nNombre: {producto[1]}\nPrecio: {producto[2]}\nGénero: {producto[3]}\nCalificación: {producto[4]}\nPlataforma: {producto[5]}\nCantidad: {producto[6]}")
+
+            producto = producto[0]
+
+            # Antes de insertar el resultado en el cuadro de texto, verificamos si el producto tiene 7 elementos
+            if producto and len(producto) == 7:
+                resultado_text.insert(tk.END, f"ID: {producto[0]}\nNombre: {producto[1]}\nPrecio: {producto[2]}\nGénero: {producto[3]}\nCalificación: {producto[4]}\nPlataforma: {producto[5]}\nCantidad: {producto[6]}")
+            else:
+                resultado_text.insert(tk.END, "Error: Producto no encontrado o formato incorrecto.")
         else:
             messagebox.showerror("Error", "Producto no encontrado")
 
@@ -143,6 +152,7 @@ def ver_detalles():
     ver_window.title("Ver Detalles del Producto")
     ver_window.geometry("400x300")
     ver_window.configure(bg="#202020")
+    ver_window.resizable(0,0)
 
     tk.Label(ver_window, text="ID del Producto", bg="#202020", fg="#FFFFFF").pack(pady=5)
     entry_id = tk.Entry(ver_window, bg="#303030", fg="#00FF00")
@@ -158,17 +168,27 @@ def editar_producto():
     def buscar_producto():
         producto_id = entry_id.get()
         producto = producto_db.obtener_producto_por_id(producto_id)
+        
         if producto:
+            # Acceder a la primera tupla de la lista
+            producto = producto[0]
+            
+            # Llenar los campos con los valores del producto
             entry_nombre.delete(0, tk.END)
             entry_nombre.insert(0, producto[1])
+            
             entry_precio.delete(0, tk.END)
             entry_precio.insert(0, producto[2])
+            
             entry_genero.delete(0, tk.END)
             entry_genero.insert(0, producto[3])
+            
             entry_calificacion.delete(0, tk.END)
             entry_calificacion.insert(0, producto[4])
+            
             entry_plataforma.delete(0, tk.END)
             entry_plataforma.insert(0, producto[5])
+            
             entry_cantidad.delete(0, tk.END)
             entry_cantidad.insert(0, producto[6])
         else:
@@ -188,8 +208,9 @@ def editar_producto():
 
     editar_window = tk.Toplevel(root)
     editar_window.title("Editar Producto")
-    editar_window.geometry("400x400")
+    editar_window.geometry("400x550")
     editar_window.configure(bg="#202020")
+    editar_window.resizable(0,0)
 
     tk.Label(editar_window, text="ID del Producto", bg="#202020", fg="#FFFFFF").pack(pady=5)
     entry_id = tk.Entry(editar_window, bg="#303030", fg="#00FF00")
@@ -229,6 +250,7 @@ root = tk.Tk()
 root.title("Gestión de Inventario")
 root.geometry("300x200")
 root.configure(bg="#202020")
+root.resizable(0,0)
 
 tk.Button(root, text="Agregar Producto", command=agregar_producto, bg="#00FF00", fg="#202020").pack(pady=10)
 tk.Button(root, text="Buscar Producto", command=buscar_productos, bg="#00FF00", fg="#202020").pack(pady=10)
