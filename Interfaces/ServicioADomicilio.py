@@ -6,17 +6,18 @@ import os
 # Agregar la ruta al directorio donde está el archivo base_De_Datos_Y_Consultas.py
 ruta_base_datos = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(ruta_base_datos)
-
 # Importar las clases necesarias desde el archivo externo
 from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
 
-def mostrar_agregar_direccion():
-   
-    ventana.title("Agregar Dirección")
-    ventana.geometry("600x600")
-    ventana.config(bg="gray")
 
-    miFrame = tk.Frame(ventana, width=500, height=500, bg="#c8c8c8")
+def mostrar_agregar_direccion():
+    
+    nueva_ventana = tk.Tk()  # Crear una nueva ventana
+    nueva_ventana.title("Agregar Dirección")
+    nueva_ventana.geometry("600x600")
+    nueva_ventana.config(bg="gray")
+
+    miFrame = tk.Frame(nueva_ventana, width=500, height=500, bg="#c8c8c8")
     miFrame.pack()
 
     # Funciones de validación
@@ -34,11 +35,11 @@ def mostrar_agregar_direccion():
 
     # Creación de las etiquetas y campos con validaciones
     tk.Label(miFrame, text="Nombre").place(x=50, y=50)
-    nombreText = tk.Entry(miFrame, validate="key", validatecommand=(ventana.register(validar_entrada_letras), "%P"))
+    nombreText = tk.Entry(miFrame, validate="key", validatecommand=(nueva_ventana.register(validar_entrada_letras), "%P"))
     nombreText.place(x=110, y=50)
 
     tk.Label(miFrame, text="Número de Teléfono").place(x=250, y=50)
-    numeroText = tk.Entry(miFrame, validate="key", validatecommand=(ventana.register(validar_entrada_numeros), "%P"))
+    numeroText = tk.Entry(miFrame, validate="key", validatecommand=(nueva_ventana.register(validar_entrada_numeros), "%P"))
     numeroText.place(x=380, y=50)
 
     tk.Label(miFrame, text="Calle").place(x=50, y=100)
@@ -54,20 +55,18 @@ def mostrar_agregar_direccion():
     coloniaText.place(x=100, y=150)
 
     tk.Label(miFrame, text="Código Postal").place(x=250, y=150)
-    codPostText = tk.Entry(miFrame, validate="key", validatecommand=(ventana.register(validar_entrada_numeros), "%P"))
+    codPostText = tk.Entry(miFrame, validate="key", validatecommand=(nueva_ventana.register(validar_entrada_numeros), "%P"))
     codPostText.place(x=350, y=150)
 
     tk.Label(miFrame, text="Referencia").place(x=50, y=200)
     referenciaText = tk.Entry(miFrame)
     referenciaText.place(x=120, y=200, width=300)
 
-    # Función de validación de campos vacíos
     def validar_campos():
         if not (nombreText.get() and numeroText.get() and calleText.get() and numExtText.get() and
                 coloniaText.get() and codPostText.get() and referenciaText.get()):
             messagebox.showwarning("Campos Vacíos", "Por favor, rellene todos los campos.")
         else:
-            # Aquí puedes agregar la lógica para procesar los datos
             mostrar_buscar_videojuegos(nombreText.get(), calleText.get())
 
     # Botones
@@ -76,9 +75,8 @@ def mostrar_agregar_direccion():
 
 # Pantalla de buscar videojuegos
 def mostrar_buscar_videojuegos(nombreText, calleText):
-    for widget in ventana.winfo_children():
-        widget.destroy()
-
+    
+    ventana = tk.Tk()  # Crear una nueva ventana
     ventana.title("Buscar Videojuegos")
     ventana.geometry('600x400')
     ventana.config(bg="#c8c8c8")
@@ -116,15 +114,6 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         costo_envio = tk.DoubleVar(value=30.0)  # Variable para el costo de envío
         metodo_pago = tk.StringVar(value="seleccione un metodo de pago")  # Método de pago seleccionado (default)
 
-        def calcular_total():
-            """Calcula el total basado en la cantidad y el costo de envío."""
-            try:
-                envio = costo_envio.get()
-                total = (precio_unitario * cantidad) + envio
-                total_label.config(text=f"$ {total:.2f}")
-            except tk.TclError:
-                total_label.config(text="Error en los valores")
-
         # Título del videojuego
         ttk.Label(nueva_ventana, text=f"{videojuego}", font=("Times New Roman", 14, "bold"), background="#f9f9f9").pack(pady=10)
 
@@ -140,17 +129,18 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         ttk.Label(nueva_ventana, text="Costo de envío:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
         envio_entry = ttk.Entry(nueva_ventana, textvariable=costo_envio, width=10, justify="center")
         envio_entry.pack(pady=5)
-        costo_envio.trace("w", lambda *args: calcular_total())  # Actualizar total al cambiar el costo de envío
 
         # Total
-        ttk.Label(nueva_ventana, text="Total:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
+        ttk.Label(nueva_ventana, text="costo del juego:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
         total_label = ttk.Label(nueva_ventana, text=f"$ {precio_unitario + costo_envio.get():.2f}", font=("Times New Roman", 12), background="#f9f9f9")
         total_label.pack(pady=5)
+        
 
         # Tipo de transacción
-        ttk.Label(nueva_ventana, text="Tipo de transacción:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
+        metodo_pago = tk.StringVar()  # Elimina el valor predeterminado inicial
         combobox_metodo_pago = ttk.Combobox(nueva_ventana, textvariable=metodo_pago, state="readonly", values=["Tarjeta", "Efectivo"])
         combobox_metodo_pago.pack(pady=5)
+        metodo_pago = combobox_metodo_pago
 
         # Botones de Confirmar y Cancelar
         botones_frame = ttk.Frame(nueva_ventana)
@@ -159,35 +149,35 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=nueva_ventana.destroy)
         cancelar_btn.grid(row=0, column=0, padx=10)
 
-        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(nueva_ventana, videojuego, metodo_pago.get()))
+        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(videojuego, metodo_pago.get(), costo_envio.get(), precio_unitario))
         confirmar_btn.grid(row=0, column=1, padx=10)
 
-    def compra_exitosa(ventana_compra, videojuego, metodo_pago):
-        ventana_compra.destroy()
-
-        # Obtener los datos del formulario
-        nombre = nombreText
-        calle = calleText
+    def compra_exitosa(videojuego, metodo_pago, costo_envio, precio_unitario ):
+        if metodo_pago == "seleccione un metodo de pago" or not metodo_pago:
+            messagebox.showwarning("Método de pago", "Por favor, selecciona un método de pago.")
+            return
+        
         fecha_inicio = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         fecha_final = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        
-        # Aquí deberías tener el ID del empleado, cliente, producto, etc. Si no los tienes, deberías obtenerlos.
-        id_empleado = 1  # Este es un ejemplo, debes asignar el ID correcto
-        id_cliente = 1  # Este es un ejemplo, debes asignar el ID correcto
-        id_producto = 1  # Este es un ejemplo, debes asignar el ID correcto
-        monto = 1200  # Este es un ejemplo, debes asignar el monto correcto
-        direccion = f"{nombre}, {calle}"  # Puedes concatenar los campos para formar la dirección completa
-        tarifa_envio = 30  # Este es un ejemplo, puedes tomarlo del formulario
-        fecha_compra = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        tipo_transaccion = metodo_pago  # El tipo de transacción será el método de pago
+        direccion = f"{nombreText}, {calleText}"
 
-        # Crear la transacción y agregarla a la base de datos
-        transaccion = Transaccion('Prueva.db')  # Asegúrate de que la ruta a la base de datos sea correcta
-        transaccion.crear_transaccion(id_empleado, id_cliente, id_producto, monto, direccion, fecha_inicio, fecha_final, tarifa_envio, fecha_compra, tipo_transaccion)
-        
+        transaccion = Transaccion('Prueva.db')
+        transaccion.crear_transaccion(
+            id_empleado=1,  # Sustituye con el ID real
+            id_cliente=1,
+            id_producto=1,
+            monto = precio_unitario,
+            direccion=direccion,
+            fecha_inicio=fecha_inicio,
+            fecha_final=fecha_final,
+            tarifa_envio=costo_envio,
+            fecha_compra=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            tipo_transaccion=metodo_pago
+        )
 
-        messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.\nMétodo de pago: {metodo_pago} \nNombre: {nombre}"+
-                                        f"\nCalle: {calle} \nFecha inicio: {fecha_inicio}, Fecha Final: {fecha_final}")
+        messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.\nMétodo de pago: {metodo_pago}\n"
+                                            f"Nombre: {nombreText}\nCalle: {calleText}")
+
 
 
     tk.Label(ventana, text="Buscar:", font=("Arial", 15), bg="#c8c8c8").pack(pady=10, anchor="w", padx=20)
@@ -233,7 +223,91 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
 
     actualizar_lista(videojuegos)
 
+
+def verificar_telefono_existe(telefono):
+    # Crear una instancia de la clase Cliente para acceder a la base de datos
+    cliente_db = Cliente('Prueva.db')
+
+    # Ejecutar una consulta para buscar el teléfono en la base de datos
+    resultado = cliente_db.consultar('''
+        SELECT telefono FROM cliente WHERE telefono = ?
+    ''', (telefono,))
+
+    # Si el resultado no está vacío, significa que el teléfono ya existe
+    if resultado:
+        return True  # El teléfono ya existe
+    else:
+        return False  # El teléfono no existe
+
+
+# Función para mostrar la ventana para agregar cliente
+def mostrar_agregar_cliente():
+    ventana2 = tk.Tk()
+    ventana2.title("Agregar Cliente")
+    ventana2.geometry("400x300")
+    
+    tk.Label(ventana2, text="Ingrese los datos del cliente para agregar:").pack(pady=10)
+    
+    # Campos de entrada para agregar un cliente (por ejemplo, nombre, teléfono)
+    nombre_label = tk.Label(ventana2, text="Nombre:")
+    nombre_label.pack(pady=5)
+    nombre_text = tk.Entry(ventana2)
+    nombre_text.pack(pady=5)
+    
+    telefono_label = tk.Label(ventana2, text="Teléfono:")
+    telefono_label.pack(pady=5)
+    telefono_text = tk.Entry(ventana2)
+    telefono_text.pack(pady=5)
+    
+    def agregar_cliente():
+        nombre = nombre_text.get()
+        telefono = telefono_text.get()
+        if nombre == "" or telefono == "":
+            messagebox.showwarning("Campos Vacíos", "Por favor, complete todos los campos.")
+        else:
+            
+            # Crear la transacción y agregarla a la base de datos
+            agrCliente = Cliente('Prueva.db')  # Asegúrate de que la ruta a la base de datos sea correcta
+            agrCliente.crear_cliente(nombre, telefono)
+
+            messagebox.showinfo("Cliente agregado", f"Cliente {nombre} con teléfono {telefono} agregado.")
+            ventana2.destroy()  # Cierra la ventana actual
+
+    tk.Button(ventana2, text="Agregar Cliente", bg="green", fg="white", command=agregar_cliente).pack(pady=10)
+    
+
+# Función para mostrar la ventana principal
+def mostrar_ventana_principal():
+    ventana = tk.Tk()
+    ventana.title("Verificar Cliente")
+    ventana.geometry("400x200")
+    ventana.config(bg="gray")
+
+    miFrame = tk.Frame(ventana, width=400, height=200, bg="#c8c8c8")
+    miFrame.pack()
+
+    tk.Label(miFrame, text="Ingrese el número de teléfono del cliente:").pack(pady=10)
+    telefonoText = tk.Entry(miFrame)
+    telefonoText.pack(pady=5)
+
+    def continuar():
+        telefono = telefonoText.get()
+        if telefono == "":
+            messagebox.showwarning("Campos Vacíos", "Por favor, ingrese el número de teléfono.")
+        else:
+            if verificar_telefono_existe(telefono):
+                messagebox.showinfo("Cliente encontrado", "Cliente encontrado en la base de datos.")
+                
+                mostrar_agregar_direccion()
+            else:
+                messagebox.showinfo("error", "cliente no encontrado")
+
+    tk.Button(miFrame, text="Continuar", bg="green", fg="white", command=continuar).pack(pady=10)
+    tk.Button(miFrame, text="Agregar Cliente", bg="blue", fg="white", command=mostrar_agregar_cliente).pack(pady=10)
+
+
+
 # Inicio de la aplicación
 ventana = tk.Tk()
-mostrar_agregar_direccion()
+mostrar_ventana_principal()
 ventana.mainloop()

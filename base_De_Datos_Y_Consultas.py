@@ -38,9 +38,8 @@ try:
     # Crear tabla cliente
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS cliente (
-            id_cliente INTEGER PRIMARY KEY,
+            id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre_cliente TEXT NOT NULL,
-            apellido_cliente TEXT,
             telefono INTEGER NOT NULL        
         )
     ''')
@@ -124,11 +123,11 @@ class Cliente(BaseDatos):
     def __init__(self, db_name):
         super().__init__(db_name)
 
-    def crear_cliente(self, nombre_cliente, apellido_cliente, telefono):
+    def crear_cliente(self, nombre_cliente, telefono):
         self.ejecutar('''
-            INSERT INTO cliente (nombre_cliente, apellido_cliente, telefono)
-            VALUES (?, ?, ?, ?)
-        ''', (nombre_cliente, apellido_cliente, telefono))
+            INSERT INTO cliente (nombre_cliente, telefono)
+            VALUES (?, ?)
+        ''', (nombre_cliente, telefono))
 
 
 #transaccion
