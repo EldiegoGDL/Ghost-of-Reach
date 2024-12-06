@@ -1,7 +1,7 @@
 import sqlite3
 #Creacion debase de datos
 try:
-    conexion = sqlite3.connect('Prueva.db')
+    conexion = sqlite3.connect(Prueva.db')
     cursor = conexion.cursor()
 
     # Crear tabla departamento
