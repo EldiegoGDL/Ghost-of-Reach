@@ -19,6 +19,13 @@ def inventario():
         import inventario
     except ImportError:
         print("No se pudo cargar el módulo inventario.")
+        
+def agregar():
+    try:
+        import Agregar
+    except ImportError:
+        print("No se pudo cargar el módulo Agregar.")
+        
 
 # Ventana principal
 ventana = tk.Tk()
@@ -46,6 +53,11 @@ boton_venta_en_linea.pack(pady=20, fill=tk.X, padx=50)
 # Botón 3: Inventario
 boton_inventario = ttk.Button(ventana, text="Inventario", style="Boton.TButton", command=inventario)
 boton_inventario.pack(pady=20, fill=tk.X, padx=50)
+
+# Botón 4: Agregar cliente y empleado
+
+boton_agregar = ttk.Button(ventana, text="Agregar", style="Boton.TButton",command=agregar)
+boton_agregar.pack(pady=20, fill=tk.X, padx=50)
 
 # Ejecutar la ventana
 ventana.mainloop()
