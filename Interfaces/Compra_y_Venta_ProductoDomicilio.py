@@ -86,7 +86,6 @@ def abrir_ventana_compra(videojuego):
     confirmar_btn.grid(row=0, column=1, padx=10)
 
 
-
 def confirmar_compra(videojuego):
     """Abre una ventana para confirmar la compra del videojuego."""
     ventana_compra = tk.Toplevel(ventana)

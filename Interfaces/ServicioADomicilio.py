@@ -1,7 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import sqlite3 as sql
 from datetime import datetime  # Importar el módulo datetime
+import sys 
+import os
+# Agregar la ruta al directorio donde está el archivo base_De_Datos_Y_Consultas.py
+ruta_base_datos = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(ruta_base_datos)
+
+# Importar las clases necesarias desde el archivo externo
+from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
 
 def mostrar_agregar_direccion():
    
@@ -157,11 +164,31 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
 
     def compra_exitosa(ventana_compra, videojuego, metodo_pago):
         ventana_compra.destroy()
-         # Obtener la fecha actual en formato de cadena
+
+        # Obtener los datos del formulario
+        nombre = nombreText
+        calle = calleText
         fecha_inicio = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         fecha_final = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.\nMétodo de pago: {metodo_pago} \nNombre: {nombreText}"+
-                            f"\nCalle: {calleText} \nFecha inicio: {fecha_inicio}, Fecha Final: {fecha_final}  ")
+        
+        # Aquí deberías tener el ID del empleado, cliente, producto, etc. Si no los tienes, deberías obtenerlos.
+        id_empleado = 1  # Este es un ejemplo, debes asignar el ID correcto
+        id_cliente = 1  # Este es un ejemplo, debes asignar el ID correcto
+        id_producto = 1  # Este es un ejemplo, debes asignar el ID correcto
+        monto = 1200  # Este es un ejemplo, debes asignar el monto correcto
+        direccion = f"{nombre}, {calle}"  # Puedes concatenar los campos para formar la dirección completa
+        tarifa_envio = 30  # Este es un ejemplo, puedes tomarlo del formulario
+        fecha_compra = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        tipo_transaccion = metodo_pago  # El tipo de transacción será el método de pago
+
+        # Crear la transacción y agregarla a la base de datos
+        transaccion = Transaccion('Prueva.db')  # Asegúrate de que la ruta a la base de datos sea correcta
+        transaccion.crear_transaccion(id_empleado, id_cliente, id_producto, monto, direccion, fecha_inicio, fecha_final, tarifa_envio, fecha_compra, tipo_transaccion)
+        
+
+        messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.\nMétodo de pago: {metodo_pago} \nNombre: {nombre}"+
+                                        f"\nCalle: {calle} \nFecha inicio: {fecha_inicio}, Fecha Final: {fecha_final}")
+
 
     tk.Label(ventana, text="Buscar:", font=("Arial", 15), bg="#c8c8c8").pack(pady=10, anchor="w", padx=20)
     entrada = tk.Entry(ventana, width=50)
