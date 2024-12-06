@@ -12,6 +12,7 @@ sys.path.append(ruta_base_datos)
 # Importar las clases necesarias desde el archivo externo
 from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
 
+
 # Base de datos
 DB_NAME = "Prueva.db"
 producto_db = Producto(DB_NAME)
@@ -74,7 +75,7 @@ def abrir_nueva_ventana(detalles_producto):
 
     # Crear los Radiobuttons
     efectivo_rb = ttk.Radiobutton(nueva_ventana, text="Efectivo", variable=metodo_pago, value="efectivo")
-    tarjeta_rb = ttk.Radiobutton(nueva_ventana, text="Tarjeta", variable=metodo_pago, value="targeta")
+    tarjeta_rb = ttk.Radiobutton(nueva_ventana, text="Tarjeta", variable=metodo_pago, value="tarjeta")
 
     efectivo_rb.pack(pady=10)
     tarjeta_rb.pack(pady=10)
