@@ -9,7 +9,6 @@ sys.path.append(ruta_base_datos)
 # Importar las clases necesarias desde el archivo externo
 from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
 
-
 def mostrar_agregar_direccion(telefono):
     
     nueva_ventana = tk.Toplevel()   # Crear una nueva ventana
@@ -103,47 +102,64 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
     ventana.geometry('600x400')
     ventana.config(bg="#c8c8c8")
 
+    DB_NAME = "Prueva.db"
+    producto_db = Producto(DB_NAME)
+
+    # Función para actualizar la lista desde la base de datos
+    def actualizar_lista_desde_bd():
+        productos = producto_db.consultar("SELECT nombre_producto FROM producto WHERE cantidad > 0")
+        lista_productos = [producto[0] for producto in productos]  # Extraer nombres de productos
+        actualizar_lista(lista_productos)
+
+    def actualizar_lista(productos):
+        """Actualiza los elementos del Listbox con una nueva lista de productos."""
+        listbox.delete(0, tk.END)  # Limpia el Listbox
+        for producto in productos:
+            listbox.insert(tk.END, producto)  # Agrega cada producto al Listbox
+
     def buscar_en_lista(event=None):
+        """Filtra los productos según el texto ingresado."""
         termino = entrada.get().lower()
-        lista_filtrada = [item for item in videojuegos if termino in item.lower()]
+        productos = producto_db.consultar("SELECT nombre_producto FROM producto WHERE cantidad > 0")
+        lista_filtrada = [producto[0] for producto in productos if termino in producto[0].lower()]
         actualizar_lista(lista_filtrada)
 
-    def actualizar_lista(lista_filtrada):
-        listbox.delete(0, tk.END)
-        for item in lista_filtrada:
-            listbox.insert(tk.END, item)
 
     def buscar_elemento():
+        """Muestra detalles del producto seleccionado."""
         try:
             seleccionado = listbox.get(listbox.curselection())
-            if seleccionado in videojuegos_disponibles:
-                abrir_ventana_compra(seleccionado)
+            detalles = producto_db.consultar("SELECT * FROM producto WHERE nombre_producto = ?", (seleccionado,))
+            if detalles:
+                abrir_ventana_compra(detalles[0])
             else:
-                messagebox.showinfo("No disponible", f"El videojuego '{seleccionado}' no está disponible.")
+                messagebox.showinfo("No disponible", f"El producto '{seleccionado}' no está disponible.")
         except tk.TclError:
-            messagebox.showwarning("Selección vacía", "Por favor, selecciona un videojuego para buscar.")
+            messagebox.showwarning("Selección vacía", "Por favor, selecciona un producto para buscar.")
 
-    def abrir_ventana_compra(videojuego):
+    def abrir_ventana_compra(detalles_producto):
         """Abre una nueva ventana con la información detallada del videojuego seleccionado."""
         nueva_ventana = tk.Toplevel(ventana)
         nueva_ventana.geometry("350x450")
-        nueva_ventana.title(f"Detalles de {videojuego}")
+        nueva_ventana.title(f"Detalles de {detalles_producto[1]}")
         nueva_ventana.config(bg="#f9f9f9")
 
-        plataforma = plataformas[videojuego]
-        precio_unitario = 1200  # Precio fijo por videojuego (puedes cambiarlo según tu lógica)
-        cantidad = 1  # Cantidad fija no editable
-        metodo_pago = tk.StringVar(value="seleccione un metodo de pago")  # Método de pago seleccionado (default)
+        info = f"Producto: {detalles_producto[1]}\n"
+        info += f"Precio: {detalles_producto[2]}\n"
+        info += f"Género: {detalles_producto[3]}\n"
+        info += f"Calificación: {detalles_producto[4]}\n"
+        info += f"Plataforma: {detalles_producto[5]}\n"
+        info += f"Cantidad disponible: {detalles_producto[6]}"
 
         # Título del videojuego
-        ttk.Label(nueva_ventana, text=f"{videojuego}", font=("Times New Roman", 14, "bold"), background="#f9f9f9").pack(pady=10)
+        ttk.Label(nueva_ventana, text=f"{detalles_producto[1]}", font=("Times New Roman", 14, "bold"), background="#f9f9f9").pack(pady=10)
 
         # Plataforma
-        ttk.Label(nueva_ventana, text=f"Plataforma: {plataforma}", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
+        ttk.Label(nueva_ventana, text=f"Plataforma: {detalles_producto[5]}", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
 
         # Cantidad
         ttk.Label(nueva_ventana, text="Cantidad:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
-        cantidad_label = ttk.Label(nueva_ventana, text=int(cantidad), anchor="center", font=("Times New Roman", 12),background="#f9f9f9", width=10)
+        cantidad_label = ttk.Label(nueva_ventana, text=1, anchor="center", font=("Times New Roman", 12),background="#f9f9f9", width=10)
         cantidad_label.pack(pady=5)
 
         # Costo de envío
@@ -153,7 +169,7 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
 
         # Total
         ttk.Label(nueva_ventana, text="costo del juego:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
-        total_label = ttk.Label(nueva_ventana, text=f"$ {precio_unitario}", font=("Times New Roman", 12), background="#f9f9f9")
+        total_label = ttk.Label(nueva_ventana, text=f"$ {detalles_producto[2]}", font=("Times New Roman", 12), background="#f9f9f9")
         total_label.pack(pady=5)
         
 
@@ -171,7 +187,7 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=ventana.destroy)
         cancelar_btn.grid(row=0, column=0, padx=10)
 
-        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(videojuego, metodo_pago.get(), envio_entry.get(), precio_unitario))
+        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(detalles_producto[1], metodo_pago.get(), envio_entry.get(), detalles_producto[2]))
         confirmar_btn.grid(row=0, column=1, padx=10)
 
     def compra_exitosa(videojuego, metodo_pago, costo_envio, precio_unitario ):
@@ -215,35 +231,7 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
     tk.Button(ventana, text="Atrás", command=ventana.destroy).pack(pady=10)
     tk.Button(ventana, text="Buscar", command=buscar_elemento).pack()
 
-    videojuegos = [
-        "The Legend of Zelda: Breath of the Wild", "Super Mario Odyssey", "Halo Infinite", "God of War Ragnarok",
-        "Elden Ring", "Hollow Knight", "Minecraft", "Fortnite", "Cyberpunk 2077", "Red Dead Redemption 2",
-        "The Witcher 3", "Among Us", "League of Legends", "Call of Duty: Modern Warfare II", "Final Fantasy XVI"
-    ]
-
-    videojuegos_disponibles = [
-        "The Legend of Zelda: Breath of the Wild", "God of War Ragnarok", "Elden Ring", "Minecraft", "Red Dead Redemption 2"
-    ]
-
-    plataformas = {
-        "The Legend of Zelda: Breath of the Wild": "Nintendo Switch",
-        "Super Mario Odyssey": "Nintendo Switch",
-        "Halo Infinite": "Xbox Series X|S",
-        "God of War Ragnarok": "PlayStation 5",
-        "Elden Ring": "Multiplataforma",
-        "Hollow Knight": "Multiplataforma",
-        "Minecraft": "Multiplataforma",
-        "Fortnite": "Multiplataforma",
-        "Cyberpunk 2077": "Multiplataforma",
-        "Red Dead Redemption 2": "Multiplataforma",
-        "The Witcher 3": "Multiplataforma",
-        "Among Us": "Multiplataforma",
-        "League of Legends": "PC",
-        "Call of Duty: Modern Warfare II": "Multiplataforma",
-        "Final Fantasy XVI": "PlayStation 5"
-    }
-
-    actualizar_lista(videojuegos)
+    actualizar_lista_desde_bd()
 
 
 def verificar_telefono_existe(telefono):
