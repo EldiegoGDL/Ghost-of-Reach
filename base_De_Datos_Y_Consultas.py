@@ -41,8 +41,7 @@ try:
             id_cliente INTEGER PRIMARY KEY,
             nombre_cliente TEXT NOT NULL,
             apellido_cliente TEXT,
-            telefono INTEGER NOT NULL,
-            correo_cliente TEXT            
+            telefono INTEGER NOT NULL        
         )
     ''')
 
