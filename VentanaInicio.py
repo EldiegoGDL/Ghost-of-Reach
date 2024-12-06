@@ -1,30 +1,34 @@
 import tkinter as tk
 from tkinter import ttk
-import Ventana_compra_busqueda
-import ServicioADomicilio
-import inventario
-import Agregar
+
+
+
+
 
 # Funciones para los botones
 def compra_fisica():
+    import Ventana_compra_busqueda
     try:
         Ventana_compra_busqueda.mostrar_ventana()
     except AttributeError:
         print("No se pudo encontrar la función 'mostrar_ventana' en Ventana_compra_busqueda.")
 
 def venta_en_linea():
+    import ServicioADomicilio
     try:
-        ServicioADomicilio.mostrar_ventana()
+        ServicioADomicilio.mostrar_ventana_principal()
     except AttributeError:
         print("No se pudo encontrar la función 'mostrar_ventana' en ServicioADomicilio.")
 
 def inventario():
+    import inventario
     try:
         inventario.mostrar_ventana()
     except AttributeError:
         print("No se pudo encontrar la función 'mostrar_ventana' en inventario.")
         
 def agregar():
+    import Agregar
     try:
         Agregar.mostrar_ventana()
     except AttributeError:
