@@ -1,87 +1,119 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
+from sqlite3 import IntegrityError
+import sys
+import os
+
+# Agregar la ruta al directorio donde está el archivo base_De_Datos_Y_Consultas.py
+ruta_base_datos = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(ruta_base_datos)
+
+# Importar las clases necesarias desde el archivo externo
+from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
+
+# Base de datos
+DB_NAME = "Prueva.db"
+producto_db = Producto(DB_NAME)
+cliente_db = Cliente(DB_NAME)
+transaccion_db = Transaccion(DB_NAME)
+
+# Función para actualizar la lista desde la base de datos
+def actualizar_lista_desde_bd():
+    productos = producto_db.consultar("SELECT nombre_producto FROM producto WHERE cantidad > 0")
+    lista_productos = [producto[0] for producto in productos]  # Extraer nombres de productos
+    actualizar_lista(lista_productos)
+
+def actualizar_lista(productos):
+    """Actualiza los elementos del Listbox con una nueva lista de productos."""
+    listbox.delete(0, tk.END)  # Limpia el Listbox
+    for producto in productos:
+        listbox.insert(tk.END, producto)  # Agrega cada producto al Listbox
 
 def buscar_en_lista(event=None):
-    """Filtra los videojuegos según el texto ingresado en el Entry."""
-    termino = entrada.get().lower()  # Obtener texto del Entry y convertir a minúsculas
-    lista_filtrada = [item for item in videojuegos if termino in item.lower()]  # Filtrar lista
+    """Filtra los productos según el texto ingresado."""
+    termino = entrada.get().lower()
+    productos = producto_db.consultar("SELECT nombre_producto FROM producto  > 0")
+    lista_filtrada = [producto[0] for producto in productos if termino in producto[0].lower()]
     actualizar_lista(lista_filtrada)
 
-def actualizar_lista(lista_filtrada):
-    """Actualiza el Listbox con los videojuegos filtrados."""
-    listbox.delete(0, tk.END)  # Eliminar elementos actuales
-    for item in lista_filtrada:
-        listbox.insert(tk.END, item)  # Insertar elementos filtrados
-
 def buscar_elemento():
-    """Verifica si el videojuego seleccionado está disponible y realiza la acción correspondiente."""
+    """Muestra detalles del producto seleccionado."""
     try:
-        seleccionado = listbox.get(listbox.curselection())  # Obtener el videojuego seleccionado
-        if seleccionado in videojuegos_disponibles:
-            abrir_nueva_ventana(seleccionado)
+        seleccionado = listbox.get(listbox.curselection())
+        detalles = producto_db.consultar("SELECT * FROM producto WHERE nombre_producto = ?", (seleccionado,))
+        if detalles:
+            abrir_nueva_ventana(detalles[0])
         else:
-            messagebox.showinfo("No disponible", f"El videojuego '{seleccionado}' no está disponible.")
+            messagebox.showinfo("No disponible", f"El producto '{seleccionado}' no está disponible.")
     except tk.TclError:
-        messagebox.showwarning("Selección vacía", "Por favor, selecciona un videojuego para buscar.")
+        messagebox.showwarning("Selección vacía", "Por favor, selecciona un producto para buscar.")
 
-def abrir_nueva_ventana(videojuego):
-    """Abre una nueva ventana con la información del videojuego seleccionado."""
+def abrir_nueva_ventana(detalles_producto):
+    """Abre una nueva ventana con información del producto."""
+    
     nueva_ventana = tk.Toplevel(ventana)
-    nueva_ventana.geometry("300x200")
-    nueva_ventana.title(f"Detalles de {videojuego}")
+    nueva_ventana.geometry("300x250")
+    nueva_ventana.title(f"Detalles de {detalles_producto[1]}")
     nueva_ventana.config(bg="#c8c8c8")
+    nueva_ventana.resizable(0,0)
 
-    # Obtener plataforma del videojuego
-    plataforma = plataformas[videojuego]
+    info = f"Producto: {detalles_producto[1]}\n"
+    info += f"Precio: {detalles_producto[2]}\n"
+    info += f"Género: {detalles_producto[3]}\n"
+    info += f"Calificación: {detalles_producto[4]}\n"
+    info += f"Plataforma: {detalles_producto[5]}\n"
+    info += f"Cantidad disponible: {detalles_producto[6]}"
 
-    etiqueta = ttk.Label(nueva_ventana, text=f"Plataforma: {plataforma}", font=("Times New Roman", 12),background="#c8c8c8")
-    etiqueta.pack(pady=20)
+    etiqueta = ttk.Label(nueva_ventana, text=info, font=("Times New Roman", 12), background="#c8c8c8")
+    etiqueta.pack(pady=10)
 
-    comprar_btn = ttk.Button(nueva_ventana, text="Comprar", command=lambda: confirmar_compra(videojuego))
+    comprar_btn = ttk.Button(nueva_ventana, text="Comprar", command=lambda: confirmar_compra(detalles_producto,nueva_ventana))
     comprar_btn.pack(pady=10)
 
     cerrar_btn = ttk.Button(nueva_ventana, text="Cerrar", command=nueva_ventana.destroy)
     cerrar_btn.pack(pady=10)
 
-def confirmar_compra(videojuego):
-    """Abre una ventana para confirmar la compra del videojuego."""
-    ventana_compra = tk.Toplevel(ventana)
-    ventana_compra.geometry("300x150")
-    ventana_compra.title("Confirmar Compra")
-    ventana_compra.config(bg="#c8c8c8")
+def confirmar_compra(detalles_producto,nueva_ventana):
+    """Simula la compra de un producto."""
+    
+    try:
+        # Insertar una transacción (por simplicidad, se usan valores genéricos para cliente y empleado)
+        
+        transaccion_db.crear_transaccion(
+            id_empleado=1, id_cliente=1, id_producto=detalles_producto[0],
+            monto=detalles_producto[2], direccion="local",
+            fecha_inicio=None, fecha_final=None, tarifa_envio=0,
+            fecha_compra=None, tipo_transaccion="Compra"
+        )
+        producto_db.ejecutar('''
+        UPDATE producto
+        SET cantidad = cantidad - ?
+        WHERE id_producto = ?
+        ''', (1, detalles_producto[0]))
+        actualizar_lista_desde_bd()
 
-    etiqueta = ttk.Label(ventana_compra, text=f"¿Deseas comprar '{videojuego}'?", font=("Times New Roman", 12),background="#c8c8c8")
-    etiqueta.pack(pady=20)
+        nueva_ventana.destroy
+        
 
-    confirmar_btn = ttk.Button(ventana_compra, text="Confirmar", command=lambda: compra_exitosa(ventana_compra, videojuego))
-    confirmar_btn.pack(pady=5)
+        messagebox.showinfo("Compra realizada", f"Has comprado el producto: {detalles_producto[1]}")
+    except IntegrityError as e:
+        messagebox.showerror("Error", f"No se pudo registrar la transacción: {e}")
 
-    cancelar_btn = ttk.Button(ventana_compra, text="Cancelar", command=ventana_compra.destroy)
-    cancelar_btn.pack(pady=5)
-
-def compra_exitosa(ventana_compra, videojuego):
-    """Muestra un mensaje de compra exitosa y cierra la ventana de confirmación."""
-    ventana_compra.destroy()
-    messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.")
-
-# Crear ventana principal
+# Ventana principal
 ventana = tk.Tk()
 ventana.geometry('600x400')
 ventana.resizable(0, 0)
-ventana.title("Buscador de Videojuegos")
+ventana.title("Gestión de Productos")
 ventana.config(bg="#c8c8c8")
 
-# Etiqueta para el Entry
-etiqueta = ttk.Label(ventana, text="Buscar:", font=("Times New Roman", 15),background="#c8c8c8")
+# Elementos de la interfaz
+etiqueta = ttk.Label(ventana, text="Buscar producto:", font=("Times New Roman", 15), background="#c8c8c8")
 etiqueta.pack(pady=10, anchor="w", padx=20)
 
-# Entry para ingresar el texto de búsqueda
 entrada = ttk.Entry(ventana, width=50)
 entrada.pack(pady=5, padx=20, anchor="w")
-entrada.bind("<KeyRelease>", buscar_en_lista)  # Buscar en tiempo real
+entrada.bind("<KeyRelease>", buscar_en_lista)
 
-# Listbox para mostrar los videojuegos
 listbox_frame = ttk.Frame(ventana)
 listbox_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
 
@@ -92,47 +124,11 @@ listbox = tk.Listbox(listbox_frame, font=("Times New Roman", 12), yscrollcommand
 listbox.pack(fill=tk.BOTH, expand=True)
 scrollbar.config(command=listbox.yview)
 
-# Botón para buscar videojuego
-boton_buscar = ttk.Button(ventana, text="Buscar", command=buscar_elemento)
+boton_buscar = ttk.Button(ventana, text="Ver Detalles", command=buscar_elemento)
 boton_buscar.pack(pady=10)
 
-# Lista inicial de videojuegos
-videojuegos = [
-    "The Legend of Zelda: Breath of the Wild", "Super Mario Odyssey", 
-    "Halo Infinite", "God of War Ragnarok", "Elden Ring", 
-    "Hollow Knight", "Minecraft", "Fortnite", "Cyberpunk 2077", 
-    "Red Dead Redemption 2", "The Witcher 3", "Among Us", 
-    "League of Legends", "Call of Duty: Modern Warfare II", 
-    "Final Fantasy XVI"
-]
+# Cargar productos al iniciar
+actualizar_lista_desde_bd()
 
-# Lista de videojuegos disponibles
-videojuegos_disponibles = [
-    "The Legend of Zelda: Breath of the Wild", "God of War Ragnarok", 
-    "Elden Ring", "Minecraft", "Red Dead Redemption 2"
-]
-
-# Diccionario de plataformas
-plataformas = {
-    "The Legend of Zelda: Breath of the Wild": "Nintendo Switch",
-    "Super Mario Odyssey": "Nintendo Switch",
-    "Halo Infinite": "Xbox Series X|S",
-    "God of War Ragnarok": "PlayStation 5",
-    "Elden Ring": "Multiplataforma",
-    "Hollow Knight": "Multiplataforma",
-    "Minecraft": "Multiplataforma",
-    "Fortnite": "Multiplataforma",
-    "Cyberpunk 2077": "Multiplataforma",
-    "Red Dead Redemption 2": "Multiplataforma",
-    "The Witcher 3": "Multiplataforma",
-    "Among Us": "Multiplataforma",
-    "League of Legends": "PC",
-    "Call of Duty: Modern Warfare II": "Multiplataforma",
-    "Final Fantasy XVI": "PlayStation 5"
-}
-
-# Cargar videojuegos iniciales en el Listbox
-actualizar_lista(videojuegos)
-
-# Ejecutar la ventana
+# Ejecutar ventana
 ventana.mainloop()
