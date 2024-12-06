@@ -94,6 +94,11 @@ def confirmar_compra(detalles_producto,metodo_pago,nueva_ventana):
         # Insertar una transacción (por simplicidad, se usan valores genéricos para cliente y empleado)
         
         seleccion = metodo_pago.get()
+        ###
+        ###
+        ### esta parte le toca a adrian y hector solo hagan una clase que agregue empleado y cliente
+        ### 
+        ###
         transaccion_db.crear_transaccion(
             id_empleado=1, id_cliente=1, id_producto=detalles_producto[0],
             monto=detalles_producto[2], direccion="local",
