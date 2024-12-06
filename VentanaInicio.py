@@ -5,6 +5,7 @@ import ServicioADomicilio
 import inventario
 import Agregar
 
+
 # Funciones para los botones
 def compra_fisica():
     try:
@@ -14,11 +15,11 @@ def compra_fisica():
 
 def venta_en_linea():
     try:
-        ServicioADomicilio.mostrar_ventana()
+        ServicioADomicilio.mostrar_ventana_principal()
     except AttributeError:
         print("No se pudo encontrar la función 'mostrar_ventana' en ServicioADomicilio.")
 
-def inventario():
+def Inventario():
     try:
         inventario.mostrar_ventana()
     except AttributeError:
@@ -29,6 +30,7 @@ def agregar():
         Agregar.mostrar_ventana()
     except AttributeError:
         print("No se pudo encontrar la función 'mostrar_ventana' en Agregar.")
+
 
 # Ventana principal
 ventana = tk.Tk()
@@ -54,7 +56,7 @@ boton_venta_en_linea = ttk.Button(ventana, text="Venta en Línea", style="Boton.
 boton_venta_en_linea.pack(pady=20, fill=tk.X, padx=50)
 
 # Botón 3: Inventario
-boton_inventario = ttk.Button(ventana, text="Inventario", style="Boton.TButton", command=inventario)
+boton_inventario = ttk.Button(ventana, text="Inventario", style="Boton.TButton", command=Inventario)
 boton_inventario.pack(pady=20, fill=tk.X, padx=50)
 
 # Botón 4: Agregar cliente y empleado

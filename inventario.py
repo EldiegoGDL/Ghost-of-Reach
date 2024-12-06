@@ -35,23 +35,23 @@ class Producto(BaseDatos):
         ''', (nombre, precio, genero, calificacion, plataforma, cantidad))
 
     def buscar_productos(self, nombre_producto):
-        return self.consultar('''
-            SELECT * FROM producto WHERE nombre_producto LIKE ?
+        return self.consultar(''' 
+            SELECT * FROM producto WHERE nombre_producto LIKE ? 
         ''', ('%' + nombre_producto + '%',))
 
     def obtener_producto_por_id(self, producto_id):
-        return self.consultar('''
-            SELECT * FROM producto WHERE id_producto = ?
+        return self.consultar(''' 
+            SELECT * FROM producto WHERE id_producto = ? 
         ''', (producto_id,))
 
     def actualizar_producto(self, producto_id, nombre, precio, genero, calificacion, plataforma, cantidad):
-        self.ejecutar('''
-            UPDATE producto SET nombre_producto=?, precio=?, genero=?, Calificacion=?, plataforma=?, cantidad=? WHERE id_producto=?
+        self.ejecutar(''' 
+            UPDATE producto SET nombre_producto=?, precio=?, genero=?, Calificacion=?, plataforma=?, cantidad=? WHERE id_producto=? 
         ''', (nombre, precio, genero, calificacion, plataforma, cantidad, producto_id))
 
     def eliminar_producto(self, producto_id):
-        self.ejecutar('''
-            DELETE FROM producto WHERE id_producto = ?
+        self.ejecutar(''' 
+            DELETE FROM producto WHERE id_producto = ? 
         ''', (producto_id,))
 
 
@@ -59,14 +59,14 @@ class Producto(BaseDatos):
 producto_db = Producto('Prueva.db')
 
 # Función para buscar productos
-def buscar_productos():
+def buscar_productos(root):
     def buscar():
         nombre = entry_nombre.get()
         productos = producto_db.buscar_productos(nombre)
         resultado_text.delete(1.0, tk.END)
         if productos:
             for resultado in productos:
-                resultado_text.insert(tk.END, f"ID: {resultado[0]}, Nombre: {resultado[1]}, Precio: {resultado[2]}, Cantidad: {resultado[3]}\n")
+                resultado_text.insert(tk.END, f"ID: {resultado[0]}\nNombre: {resultado[1]}\nPrecio: {resultado[2]}\nCantidad: {resultado[3]}\n")
         else:
             resultado_text.insert(tk.END, "No se encontraron productos.")
 
@@ -86,7 +86,7 @@ def buscar_productos():
     resultado_text.pack(pady=10)
 
 # Función para agregar productos
-def agregar_producto():
+def agregar_producto(root):
     def agregar():
         nombre = entry_nombre.get()
         precio = entry_precio.get()
@@ -97,13 +97,13 @@ def agregar_producto():
         producto_db.crear_producto(nombre, precio, genero, calificacion, plataforma, cantidad)
         messagebox.showinfo("Producto Agregado", "Producto agregado exitosamente")
         agregar_window.destroy()
-        
+
     agregar_window = tk.Toplevel(root)
     agregar_window.title("Agregar Producto")
     agregar_window.geometry("300x450")
     agregar_window.configure(bg="#202020")
     agregar_window.resizable(0,0)
-    
+
     tk.Label(agregar_window, text="Nombre", bg="#202020", fg="#FFFFFF").pack(pady=5)
     entry_nombre = tk.Entry(agregar_window, bg="#303030", fg="#00FF00")
     entry_nombre.pack(pady=5)
@@ -131,7 +131,7 @@ def agregar_producto():
     tk.Button(agregar_window, text="Agregar", command=agregar, bg="#00FF00", fg="#202020").pack(pady=10)
 
 # Función para ver detalles de un producto
-def ver_detalles():
+def ver_detalles(root):
     def buscar_producto():
         producto_id = entry_id.get()
         producto = producto_db.obtener_producto_por_id(producto_id)
@@ -140,7 +140,6 @@ def ver_detalles():
 
             producto = producto[0]
 
-            # Antes de insertar el resultado en el cuadro de texto, verificamos si el producto tiene 7 elementos
             if producto and len(producto) == 7:
                 resultado_text.insert(tk.END, f"ID: {producto[0]}\nNombre: {producto[1]}\nPrecio: {producto[2]}\nGénero: {producto[3]}\nCalificación: {producto[4]}\nPlataforma: {producto[5]}\nCantidad: {producto[6]}")
             else:
@@ -164,16 +163,14 @@ def ver_detalles():
     resultado_text.pack(pady=10)
 
 # Función para editar productos
-def editar_producto():
+def editar_producto(root):
     def buscar_producto():
         producto_id = entry_id.get()
         producto = producto_db.obtener_producto_por_id(producto_id)
         
         if producto:
-            # Acceder a la primera tupla de la lista
             producto = producto[0]
             
-            # Llenar los campos con los valores del producto
             entry_nombre.delete(0, tk.END)
             entry_nombre.insert(0, producto[1])
             
@@ -244,20 +241,24 @@ def editar_producto():
 
     tk.Button(editar_window, text="Actualizar", command=actualizar_producto, bg="#00FF00", fg="#202020").pack(pady=10)
 
-
 # Función principal de la aplicación
-root = tk.Tk()
-root.title("Gestión de Inventario")
-root.geometry("300x200")
-root.configure(bg="#202020")
-root.resizable(0,0)
+def mostrar_ventana():
+    # Función principal de la aplicación
+    root = tk.Tk()
+    root.title("Gestión de Inventario")
+    root.geometry("300x200")
+    root.configure(bg="#202020")
+    root.resizable(0,0)
 
-tk.Button(root, text="Agregar Producto", command=agregar_producto, bg="#00FF00", fg="#202020").pack(pady=10)
-tk.Button(root, text="Buscar Producto", command=buscar_productos, bg="#00FF00", fg="#202020").pack(pady=10)
-tk.Button(root, text="Ver Detalles", command=ver_detalles, bg="#00FF00", fg="#202020").pack(pady=10)
-tk.Button(root, text="Editar Producto", command=editar_producto, bg="#00FF00", fg="#202020").pack(pady=10)
+    tk.Button(root, text="Agregar Producto", command=lambda: agregar_producto(root), bg="#00FF00", fg="#202020").pack(pady=10)
+    tk.Button(root, text="Buscar Producto", command=lambda: buscar_productos(root), bg="#00FF00", fg="#202020").pack(pady=10)
+    tk.Button(root, text="Ver Detalles", command=lambda: ver_detalles(root), bg="#00FF00", fg="#202020").pack(pady=10)
+    tk.Button(root, text="Editar Producto", command=lambda: editar_producto(root), bg="#00FF00", fg="#202020").pack(pady=10)
 
-root.mainloop()
+    root.mainloop()
+
+
+
 
 
 #como funciona el codigo en primeras pues le puse lode la base de datos en caso de que lo ocupen 

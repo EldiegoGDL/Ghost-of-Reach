@@ -142,5 +142,5 @@ def mostrar_ventana():
     ventana.mainloop()
 
 
-mostrar_ventana()
+
 

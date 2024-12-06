@@ -118,16 +118,17 @@ def agregar_cliente():
     entry_telefono.pack(pady=5)
         
     tk.Button(agregarC, text="Agregar", command=agregarCliente, bg="#52796f", fg="#cad2c5").pack(pady=10)
+def mostrar_ventana():
+    #creacion de ventana 
+    root = tk.Tk()
+    root.title("Empleado_cliente")
+    root.config(background="#2f3e46")
+    root.geometry("400x300")
 
-#creacion de ventana 
-root = tk.Tk()
-root.title("Empleado_cliente")
-root.config(background="#2f3e46")
-root.geometry("400x300")
+    tk.Label(root,text="Bienvenidos al registro de clientes y empleados",font=10, bg="#2f3e46",fg="#cad2c5").pack(pady=10)
+    tk.Button(root, text="Agregar Empleado",command=agregar_empleado,font=10,  bg="#52796f", fg="#cad2c5").pack(pady=30)
+    tk.Button(root, text="Agregar Cliente",command=agregar_cliente,font=10, bg="#52796f", fg="#cad2c5").pack(pady=30)
 
-tk.Label(root,text="Bienvenidos al registro de clientes y empleados",font=10, bg="#2f3e46",fg="#cad2c5").pack(pady=10)
-tk.Button(root, text="Agregar Empleado",command=agregar_empleado,font=10,  bg="#52796f", fg="#cad2c5").pack(pady=30)
-tk.Button(root, text="Agregar Cliente",command=agregar_cliente,font=10, bg="#52796f", fg="#cad2c5").pack(pady=30)
+    # Ejecutar la ventana
+    root.mainloop()
 
-# Ejecutar la ventana
-root.mainloop()
