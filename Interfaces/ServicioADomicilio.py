@@ -12,7 +12,7 @@ from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
 
 def mostrar_agregar_direccion(telefono):
     
-    nueva_ventana = tk.Tk()  # Crear una nueva ventana
+    nueva_ventana = tk.Toplevel()   # Crear una nueva ventana
     nueva_ventana.title("Agregar Dirección")
     nueva_ventana.geometry("600x600")
     nueva_ventana.config(bg="gray")
@@ -98,7 +98,7 @@ def mostrar_agregar_direccion(telefono):
 # Pantalla de buscar videojuegos
 def mostrar_buscar_videojuegos(nombreText, calleText):
     
-    ventana = tk.Tk()  # Crear una nueva ventana
+    ventana = tk.Toplevel()  
     ventana.title("Buscar Videojuegos")
     ventana.geometry('600x400')
     ventana.config(bg="#c8c8c8")
@@ -300,7 +300,8 @@ def mostrar_agregar_cliente():
 
 # Función para mostrar la ventana principal
 def mostrar_ventana_principal():
-    ventana = tk.Tk()
+    
+    ventana = tk.Tk()  # Ventana principal
     ventana.title("Verificar Cliente")
     ventana.geometry("400x200")
     ventana.config(bg="gray")
@@ -326,10 +327,8 @@ def mostrar_ventana_principal():
 
     tk.Button(miFrame, text="Continuar", bg="green", fg="white", command=continuar).pack(pady=10)
     tk.Button(miFrame, text="Agregar Cliente", bg="blue", fg="white", command=mostrar_agregar_cliente).pack(pady=10)
+    ventana.mainloop()
 
 
 
-# Inicio de la aplicación
-ventana = tk.Tk()
 mostrar_ventana_principal()
-ventana.mainloop()
