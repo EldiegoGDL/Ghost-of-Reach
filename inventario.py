@@ -165,7 +165,6 @@ def eliminar_producto():
     
     tk.Button(eliminar_window, text="Eliminar", command=eliminar, bg="#FF0000", fg="#FFFFFF").pack(pady=10)
 
-<<<<<<< HEAD
 def main():
     global root
     root = tk.Tk()
@@ -178,48 +177,22 @@ def main():
 
     subtitle_label = tk.Label(root, text="Agrega, busca y administra productos", font=("Helvetica", 14), fg="#FFFFFF", bg="#000000")
     subtitle_label.pack(pady=10)
-=======
-class Inventario:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Gestión de Inventario")
-        self.root.geometry("400x500")
-        self.root.configure(bg="#FFD700")
 
-        # Título de la ventana
-        title_label = tk.Label(root, text="Gestión de Inventario", font=("Helvetica", 24, "bold"), fg="darkmagenta", bg="#FFD700")
-        title_label.pack(pady=10)
+    buttons = [
+        ("Buscar Productos", buscar_productos),
+        ("Agregar Producto", agregar_producto),
+        ("Ver Detalles", ver_detalles),
+        ("Editar Producto", editar_producto),
+        ("Eliminar Producto", eliminar_producto),
+    ]
 
-        # Subtítulo
-        subtitle_label = tk.Label(root, text="Agrega, busca y administra productos", font=("Helvetica", 14), fg="darkmagenta", bg="#FFD700")
-        subtitle_label.pack(pady=10)
->>>>>>> 4c4f59bc2dde3d7fd33f4041892a03da017cb715
-
-        # Lista de botones y sus funciones
-        buttons = [
-            ("Buscar Productos", buscar_productos),
-            ("Agregar Producto", agregar_producto),
-            ("Ver Detalles", ver_detalles),
-            ("Editar Producto", editar_producto),
-            ("Eliminar Producto", eliminar_producto),
-        ]
-
-<<<<<<< HEAD
     for btn_text, btn_command in buttons:
         button = tk.Button(root, text=btn_text, command=btn_command, bg="#00FF00", fg="#000000", font=("Helvetica", 12), width=20, height=2)
         button.pack(pady=10)
-=======
-        # Crear los botones y añadirlos a la ventana
-        for btn_text, btn_command in buttons:
-            button = tk.Button(root, text=btn_text, command=btn_command, bg="#F08080", fg="white", font=("Helvetica", 12), width=20, height=2)
-            button.pack(pady=10)
->>>>>>> 4c4f59bc2dde3d7fd33f4041892a03da017cb715
 
-    # Si se desea, se pueden agregar más métodos específicos aquí
+    root.mainloop()
 
-# Código principal que inicia la ventana
 if __name__ == "__main__":
-<<<<<<< HEAD
     main()
     conn.close()
 
@@ -227,9 +200,4 @@ if __name__ == "__main__":
 #como funciona el codigo en primeras pues le puse lode la base de datos en caso de que lo ocupen 
 #al momento de ejecutar el codigo pueden seleccionar la opcion que quierean tienen diferentes funcionalidades
 #para saber el id de los productos solo se van a la primera opcion buscan el juego como lo pusieron ya el codigo les asigna un id que es un numero y ya en las pestañas 
-#que les pida el id nada mas ponen el numero y ya les aparecen los datos ya si quieren que le agregue algo me avisan
-=======
-    root = tk.Tk()  # Crear la ventana principal
-    inventario_window = Inventario(root)  # Crear la instancia de la clase Inventario
-    root.mainloop()  # Iniciar el ciclo de la aplicación
->>>>>>> 4c4f59bc2dde3d7fd33f4041892a03da017cb715
+#que les pida el id nada mas ponen el numero y ya les aparecen los datos ya si quieren que le agregue algo me
