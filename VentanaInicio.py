@@ -8,28 +8,27 @@ import Agregar
 # Funciones para los botones
 def compra_fisica():
     try:
-        import Ventana_compra_busqueda
-    except ImportError:
-        print("No se pudo cargar el módulo Ventana_compra_busqueda.")
+        Ventana_compra_busqueda.mostrar_ventana()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en Ventana_compra_busqueda.")
 
 def venta_en_linea():
     try:
-        import ServicioADomicilio
-    except ImportError:
-        print("No se pudo cargar el módulo ServicioADomicilio.")
+        ServicioADomicilio.mostrar_ventana()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en ServicioADomicilio.")
 
 def inventario():
     try:
-        import inventario
-    except ImportError:
-        print("No se pudo cargar el módulo inventario.")
+        inventario.mostrar_ventana()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en inventario.")
         
 def agregar():
     try:
-        import Agregar
-    except ImportError:
-        print("No se pudo cargar el módulo Agregar.")
-        
+        Agregar.mostrar_ventana()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en Agregar.")
 
 # Ventana principal
 ventana = tk.Tk()
