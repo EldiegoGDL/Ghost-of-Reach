@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sqlite3 as sql
+from datetime import datetime  # Importar el módulo datetime
 
 def mostrar_agregar_direccion():
    
@@ -23,7 +24,6 @@ def mostrar_agregar_direccion():
         if all(c.isdigit() or c == " " for c in input) or input == "":
             return True
         return False
-
 
     # Creación de las etiquetas y campos con validaciones
     tk.Label(miFrame, text="Nombre").place(x=50, y=50)
@@ -61,14 +61,14 @@ def mostrar_agregar_direccion():
             messagebox.showwarning("Campos Vacíos", "Por favor, rellene todos los campos.")
         else:
             # Aquí puedes agregar la lógica para procesar los datos
-            mostrar_buscar_videojuegos()
+            mostrar_buscar_videojuegos(nombreText.get(), calleText.get())
 
     # Botones
     tk.Button(miFrame, text="Confirmar", bg="green", fg="white", command=validar_campos).place(x=300, y=450)
     tk.Button(miFrame, text="Atrás", bg="red", fg="white", command=ventana.destroy).place(x=100, y=450)
 
 # Pantalla de buscar videojuegos
-def mostrar_buscar_videojuegos():
+def mostrar_buscar_videojuegos(nombreText, calleText):
     for widget in ventana.winfo_children():
         widget.destroy()
 
@@ -157,7 +157,11 @@ def mostrar_buscar_videojuegos():
 
     def compra_exitosa(ventana_compra, videojuego, metodo_pago):
         ventana_compra.destroy()
-        messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.\nMétodo de pago: {metodo_pago}")
+         # Obtener la fecha actual en formato de cadena
+        fecha_inicio = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        fecha_final = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        messagebox.showinfo("Compra Exitosa", f"Has comprado '{videojuego}' con éxito.\nMétodo de pago: {metodo_pago} \nNombre: {nombreText}"+
+                            f"\nCalle: {calleText} \nFecha inicio: {fecha_inicio}, Fecha Final: {fecha_final}  ")
 
     tk.Label(ventana, text="Buscar:", font=("Arial", 15), bg="#c8c8c8").pack(pady=10, anchor="w", padx=20)
     entrada = tk.Entry(ventana, width=50)
