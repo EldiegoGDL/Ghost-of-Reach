@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import sqlite3 as sql
 
+
 def buscar_en_lista(event=None):
     """Filtra los videojuegos según el texto ingresado en el Entry."""
     termino = entrada.get().lower()  # Obtener texto del Entry y convertir a minúsculas
