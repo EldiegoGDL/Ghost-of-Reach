@@ -10,12 +10,49 @@ sys.path.append(ruta_base_datos)
 from base_De_Datos_Y_Consultas import Producto, Cliente, Transaccion
 
 
-def mostrar_agregar_direccion():
+def mostrar_agregar_direccion(telefono):
     
     nueva_ventana = tk.Tk()  # Crear una nueva ventana
     nueva_ventana.title("Agregar Dirección")
     nueva_ventana.geometry("600x600")
     nueva_ventana.config(bg="gray")
+
+    """
+    cliente_db = Cliente('Prueva.db')
+
+    # Ejecutar una consulta para buscar el teléfono en la base de datos
+    resultado = cliente_db.consultar('''
+        SELECT telefono FROM cliente WHERE telefono = ?
+    ''', ("telefono",))
+
+    # Si el resultado no está vacío, significa que el teléfono ya existe
+    if resultado:
+        return True  # El teléfono ya existe
+    else:
+        return False  # El teléfono no existe
+    """
+
+    # Conectar con la base de datos y obtener el nombre del cliente
+    cliente_db = Cliente("prueva.db")  # Asegúrate de usar la ruta correcta para tu base de datos
+
+    resultado_nom = cliente_db.consultar('''
+        SELECT nombre_cliente FROM cliente WHERE telefono = ?
+    ''', (telefono,))
+
+    resultado_num = cliente_db.consultar('''
+        SELECT telefono FROM cliente WHERE telefono = ?
+    ''', (telefono,))
+
+    if resultado_nom:
+        nombre_cliente = resultado_nom[0][0]  # Obtener el primer resultado de la consulta
+    else:
+        nombre_cliente = "Cliente no encontrado" 
+
+    if resultado_num:
+        numero_cliente = resultado_num[0][0]  # Obtener el primer resultado de la consulta
+    else:
+        numero_cliente = "Cliente no encontrado" 
+
 
     miFrame = tk.Frame(nueva_ventana, width=500, height=500, bg="#c8c8c8")
     miFrame.pack()
@@ -35,11 +72,11 @@ def mostrar_agregar_direccion():
 
     # Creación de las etiquetas y campos con validaciones
     tk.Label(miFrame, text="Nombre").place(x=50, y=50)
-    nombreText = tk.Entry(miFrame, validate="key", validatecommand=(nueva_ventana.register(validar_entrada_letras), "%P"))
+    nombreText = tk.Entry(miFrame, validate="key", textvariable=tk.StringVar(value=nombre_cliente), validatecommand=(nueva_ventana.register(validar_entrada_letras), "%P"))
     nombreText.place(x=110, y=50)
 
     tk.Label(miFrame, text="Número de Teléfono").place(x=250, y=50)
-    numeroText = tk.Entry(miFrame, validate="key", validatecommand=(nueva_ventana.register(validar_entrada_numeros), "%P"))
+    numeroText = tk.Entry(miFrame, validate="key", textvariable=tk.StringVar(value=numero_cliente), validatecommand=(nueva_ventana.register(validar_entrada_letras), "%P"))
     numeroText.place(x=380, y=50)
 
     tk.Label(miFrame, text="Calle").place(x=50, y=100)
@@ -111,7 +148,6 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         plataforma = plataformas[videojuego]
         precio_unitario = 1200  # Precio fijo por videojuego (puedes cambiarlo según tu lógica)
         cantidad = 1  # Cantidad fija no editable
-        costo_envio = tk.DoubleVar(value=30.0)  # Variable para el costo de envío
         metodo_pago = tk.StringVar(value="seleccione un metodo de pago")  # Método de pago seleccionado (default)
 
         # Título del videojuego
@@ -127,16 +163,17 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
 
         # Costo de envío
         ttk.Label(nueva_ventana, text="Costo de envío:", font=("Times New Roman", 12), background="#f9f9f9").pack(pady=5)
-        envio_entry = ttk.Entry(nueva_ventana, textvariable=costo_envio, width=10, justify="center")
+        envio_entry = ttk.Entry(nueva_ventana,  width=10, justify="center")
         envio_entry.pack(pady=5)
 
         # Total
         ttk.Label(nueva_ventana, text="costo del juego:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
-        total_label = ttk.Label(nueva_ventana, text=f"$ {precio_unitario + costo_envio.get():.2f}", font=("Times New Roman", 12), background="#f9f9f9")
+        total_label = ttk.Label(nueva_ventana, text=f"$ {precio_unitario}", font=("Times New Roman", 12), background="#f9f9f9")
         total_label.pack(pady=5)
         
 
         # Tipo de transacción
+        ttk.Label(nueva_ventana, text="tipo de pago:", font=("Times New Roman", 12, "bold"), background="#f9f9f9").pack(pady=5)
         metodo_pago = tk.StringVar()  # Elimina el valor predeterminado inicial
         combobox_metodo_pago = ttk.Combobox(nueva_ventana, textvariable=metodo_pago, state="readonly", values=["Tarjeta", "Efectivo"])
         combobox_metodo_pago.pack(pady=5)
@@ -149,7 +186,7 @@ def mostrar_buscar_videojuegos(nombreText, calleText):
         cancelar_btn = ttk.Button(botones_frame, text="Cancelar", command=nueva_ventana.destroy)
         cancelar_btn.grid(row=0, column=0, padx=10)
 
-        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(videojuego, metodo_pago.get(), costo_envio.get(), precio_unitario))
+        confirmar_btn = ttk.Button(botones_frame, text="Confirmar", command=lambda: compra_exitosa(videojuego, metodo_pago.get(), envio_entry.get(), precio_unitario))
         confirmar_btn.grid(row=0, column=1, padx=10)
 
     def compra_exitosa(videojuego, metodo_pago, costo_envio, precio_unitario ):
@@ -298,7 +335,7 @@ def mostrar_ventana_principal():
             if verificar_telefono_existe(telefono):
                 messagebox.showinfo("Cliente encontrado", "Cliente encontrado en la base de datos.")
                 
-                mostrar_agregar_direccion()
+                mostrar_agregar_direccion(telefono)
             else:
                 messagebox.showinfo("error", "cliente no encontrado")
 
