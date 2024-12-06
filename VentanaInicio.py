@@ -3,29 +3,33 @@ from tkinter import ttk
 
 # Funciones para los botones
 def compra_fisica():
+    import Ventana_compra_busqueda
     try:
-        import Ventana_compra_busqueda
-    except ImportError:
-        print("No se pudo cargar el módulo Ventana_compra_busqueda.")
+        
+        Ventana_compra_busqueda.mostrar_ventana()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en Ventana_compra_busqueda.")
 
 def venta_en_linea():
+    import ServicioADomicilio
     try:
-        import ServicioADomicilio
-    except ImportError:
-        print("No se pudo cargar el módulo ServicioADomicilio.")
+        ServicioADomicilio.mostrar_ventana_principal()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en ServicioADomicilio.")
 
 def inventario():
+    import inventario
     try:
-        import inventario
-    except ImportError:
-        print("No se pudo cargar el módulo inventario.")
+        inventario()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en inventario.")
         
 def agregar():
+    import Agregar
     try:
-        import Agregar
-    except ImportError:
-        print("No se pudo cargar el módulo Agregar.")
-        
+        Agregar.mostrar_ventana()
+    except AttributeError:
+        print("No se pudo encontrar la función 'mostrar_ventana' en Agregar.")
 
 # Ventana principal
 ventana = tk.Tk()
@@ -55,12 +59,8 @@ boton_inventario = ttk.Button(ventana, text="Inventario", style="Boton.TButton",
 boton_inventario.pack(pady=20, fill=tk.X, padx=50)
 
 # Botón 4: Agregar cliente y empleado
-
-boton_agregar = ttk.Button(ventana, text="Agregar", style="Boton.TButton",command=agregar)
+boton_agregar = ttk.Button(ventana, text="Agregar", style="Boton.TButton", command=agregar)
 boton_agregar.pack(pady=20, fill=tk.X, padx=50)
 
 # Ejecutar la ventana
 ventana.mainloop()
-
-
-

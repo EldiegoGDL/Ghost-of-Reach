@@ -319,6 +319,3 @@ def mostrar_ventana_principal():
     tk.Button(miFrame, text="Agregar Cliente", bg="blue", fg="white", command=mostrar_agregar_cliente).pack(pady=10)
     ventana.mainloop()
 
-
-
-mostrar_ventana_principal()
